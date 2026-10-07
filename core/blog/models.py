@@ -1,5 +1,5 @@
 from django.db import models
-from accounts.models import User
+from accounts.models import Profile
 
 class Post(models.Model):
     """
@@ -7,7 +7,7 @@ class Post(models.Model):
     """
     
     image = models.ImageField(null=True, blank=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
     content = models.TextField()
     status = models.BooleanField()
