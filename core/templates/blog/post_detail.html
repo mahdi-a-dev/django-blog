@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ post.title }}
+{% endblock %}
+
+{% block content %}
+    <h2>{{ post.title }}</h1>
+    <hr>
+    <div>
+        {% if post.image %}
+            <img src="{{ post.image.url }}" alt="{{ post.title }}" width="600" height="400">
+        {% endif %}
+        <h3>{{ post.content }}</h3>
+        <h3>Category: {{ post.category }}</h3>
+        <h4>Published: {{ post.published_date|date:"Y/m/d - H:I" }}</h4>
+    </div>
+{% endblock %}
