@@ -1,16 +1,12 @@
 from django.db import models
-from accounts.models import Profile
-from django.contrib.auth import get_user_model
 
-# getting user model
-user = get_user_model()
 
 class Post(models.Model):
     """
     This is a class to define post for blog app 
     """
     
-    author = models.ForeignKey(user, on_delete=models.CASCADE)
+    author = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
     content = models.TextField()
     image = models.ImageField(null=True, blank=True)
@@ -20,6 +16,14 @@ class Post(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     published_date = models.DateTimeField()
+    
+    
+    def __str__(self):
+        return self.title
+    
+    
+    class Meta:
+        ordering = ["-created_date"]
     
 
 class Category(models.Model):
