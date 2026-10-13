@@ -7,7 +7,7 @@ from django.views.generic import (
     UpdateView,
     DeleteView
 )
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 
 from .forms import PostCreationForm, CommentForm
@@ -42,14 +42,14 @@ class PostDetail(DetailView):
         return context
 
 
-class CreatePost(LoginRequiredMixin, CreateView):
+class CreatePost(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     """
     Display a Post creation form,
     only authenticatec user can access.
     """
     model = Post
     form_class = PostCreationForm
-    success_url = reverse_lazy("blog:post-list")
+    success_url = reverse_lazy("accounts:profile")
     
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
@@ -60,43 +60,50 @@ class CreatePost(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user.profile
         return super().form_valid(form)
+    
+    def test_func(self):
+        return self.request.user.is_staff
 
 
-class UpdatePost(LoginRequiredMixin, UpdateView):
+class UpdatePost(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     """
     Display a Post Update form,
     only authenticatec user can access.
     """
     model = Post
     form_class = PostCreationForm
-    success_url = reverse_lazy("blog:post-list")
+    success_url = reverse_lazy("accounts:profile")
     
     def get_queryset(self):
         return Post.objects.filter(
             author=self.request.user.profile
         )
         
-
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
         context["title"] = "Update Post"
         
         return context
 
-
-class DeletePost(LoginRequiredMixin, DeleteView):
+    def test_func(self):
+        return self.request.user.is_staff
+        
+class DeletePost(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     """
     Display a Post confirm delete form,
     only authenticatec user can access.
     """
     model = Post
-    success_url = reverse_lazy("blog:post-list")
+    success_url = reverse_lazy("accounts:profile")
     
     
     def get_queryset(self):
         return Post.objects.filter(
             author=self.request.user.profile
         )
+    
+    def test_func(self):
+        return self.request.user.is_staff
 
 
 # ---------------- COMMENT ----------------
