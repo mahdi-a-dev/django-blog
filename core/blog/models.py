@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Post(models.Model):
@@ -18,6 +19,10 @@ class Post(models.Model):
     published_date = models.DateTimeField()
     
     
+    def get_absolute_url(self):
+        return reverse("blog:post-detail", kwargs={"pk": self.id})
+    
+    
     def __str__(self):
         return self.title
     
@@ -35,3 +40,23 @@ class Category(models.Model):
     
     def __str__(self):
         return self.name
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    profile = models.ForeignKey("accounts.profile", on_delete=models.CASCADE)
+    content = models.TextField()
+    
+    # like_count = models.PositiveIntegerField(default=0)
+    # dislike_count = models.PositiveIntegerField(default=0)
+    
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    
+    def __str__(self):
+        return f'Comment by {self.profile.user.email} on "{self.post.title}"'
+    
+    
+    class Meta:
+        ordering = ["-created_date"]
