@@ -1,21 +1,22 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth import login
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView, TemplateView, UpdateView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from .forms import RegisterForm
+from .forms import RegisterForm, ProfileForm
 from blog.models import Post
+from .models import Profile
 
 
 class CustomLoginView(LoginView):
-    template_name = "accounts/login.html"
+    template_name = "registration/login.html"
     redirect_authenticated_user = True
     success_url = reverse_lazy("blog:post-list")
 
 
 class RegisterView(FormView):
-    template_name = "accounts/register.html"
+    template_name = "registration/register.html"
     form_class = RegisterForm
     redirect_authenticated_user = True
     success_url = reverse_lazy("blog:post-list")
@@ -38,9 +39,27 @@ class ProfilePage(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_staff:
-            context["my_posts"] = Post.objects.filter(author=self.request.user.profile, status=True)
+            context["my_posts"] = Post.objects.filter(author=self.request.user.profile)
         return context
 
+
+class EditProfile(LoginRequiredMixin, UpdateView):
+    model = Profile
+    template_name = "accounts/edit-profile.html"
+    form_class = ProfileForm
+    success_url = reverse_lazy("accounts:profile")
+    
+    def get_object(self):
+        return get_object_or_404(
+            Profile,
+            user=self.request.user
+        ) 
+
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        context["title"] = "Update Profile"
+        
+        return context
 
     
     

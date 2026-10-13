@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ user.profile.firstname }}
+{% endblock %}
+
+{% block content %}
+    <a href="{% url 'accounts:edit-profile' %}">Edit Profile</a>
+    
+    {% if user.is_staff %}
+        <a href="{% url 'blog:post-create' %}"> Create post</a>
+    {% endif %}
+    
+    <h3>hello {{user.profile.first_name}}</h3>
+
+    {% if user.profile.image %}
+        <img src="{{ user.profile.image.url }}" alt="" width="300" height="150">
+    {% endif %}
+
+        {% if user.is_staff %}
+
+            <table border="5px">
+
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Content</th>
+                        <th>Image</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Created Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                        {% for post in my_posts %}
+
+                            <tr>
+
+                                <td>
+                                    {{ post.title }}
+                                </td>
+
+                                <td>
+                                    {{ post.content|truncatewords:"10" }}
+                                </td>
+
+                                <td>
+                                    {% if post.image %}
+                                        <img src="{{ post.image.url }}" alt="{{ post.title }}" width="200" height="100">
+                                    {% endif %}                     
+                                </td>
+
+                                <td>
+                                    {{ post.category }}
+                                </td>
+
+                                <td>
+                                    {{ post.status }}
+                                </td>
+
+                                <td>
+                                    {{ post.published_date|date:"Y/m/d - H:i" }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                    </tbody>
+    
+                </table>
+
+        {% endif %}
+{% endblock %}
