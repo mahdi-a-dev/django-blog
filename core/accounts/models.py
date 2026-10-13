@@ -63,9 +63,7 @@ class Profile(models.Model):
     
     created_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
-    
-    objects = UserManager()
-    
+        
     def __str__(self):
         return self.user.email
 
