@@ -16,6 +16,9 @@ urlpatterns = [
     path("post/<int:pk>/edit/", views.UpdatePost.as_view(), name="post-edit"),
     # delete, only superusers
     path("post/<int:pk>/delete", views.DeletePost.as_view(), name="post-delete"),
+    # change status, only superusers
+    path("post/<int:pk>/change_status", views.ChangeStatusPost.as_view(), name="post-change-status"),
+
     
     # -------- comment --------
     

@@ -1,21 +1,24 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 
 from django.views.generic import (
     ListView,
     DetailView,
     CreateView,
     UpdateView,
-    DeleteView
+    DeleteView,
+    View
 )
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 
-from .forms import PostCreationForm, CommentForm
-
+from .forms import PostForm, CommentForm
 from .models import Post, Category, Comment
 
+from django.utils import timezone
 
-# ---------------- POST ----------------
+
+# ---------------- post views ----------------
 
 
 class PostList(ListView):
@@ -24,7 +27,7 @@ class PostList(ListView):
     """
     queryset = Post.objects.filter(status=True)
     context_object_name = "posts"
-    paginate_by = 4
+    paginate_by = 10
 
 
 class PostDetail(DetailView):
@@ -48,7 +51,7 @@ class CreatePost(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     only authenticatec user can access.
     """
     model = Post
-    form_class = PostCreationForm
+    form_class = PostForm
     success_url = reverse_lazy("accounts:profile")
     
     def get_context_data(self, **kwargs):
@@ -71,7 +74,7 @@ class UpdatePost(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     only authenticatec user can access.
     """
     model = Post
-    form_class = PostCreationForm
+    form_class = PostForm
     success_url = reverse_lazy("accounts:profile")
     
     def get_queryset(self):
@@ -103,10 +106,31 @@ class DeletePost(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         )
     
     def test_func(self):
-        return self.request.user.is_staff
+        return self.request.user.is_superuser
 
 
-# ---------------- COMMENT ----------------
+class ChangeStatusPost(LoginRequiredMixin, UserPassesTestMixin, View):
+        
+    def test_func(self):
+        return self.request.user.is_superuser
+    
+    def post(self, request, *args, **kwargs):
+        post = get_object_or_404(
+            Post,
+            pk=self.kwargs["pk"]
+        )
+        
+        post.status = not post.status
+        post.published_date = (
+            timezone.now() if post.status else None
+            )
+        
+        post.save(update_fields=["status", "published_date"])
+        
+        return redirect("accounts:profile")
+        
+    
+# ---------------- comments views ----------------
 
 
 class AddComment(LoginRequiredMixin, CreateView):
