@@ -10,13 +10,14 @@ class Post(models.Model):
     author = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
     content = models.TextField()
-    image = models.ImageField(null=True, blank=True)
-    status = models.BooleanField()
+    image = models.ImageField(upload_to="post_images", default="post_images/post_default_image.png")
+    status = models.BooleanField(default=False)
     category = models.ForeignKey("Category", on_delete=models.SET_NULL, null=True)
 
     created_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
-    published_date = models.DateTimeField()
+    
+    published_date = models.DateTimeField(null=True, blank=True)
     
     
     def get_absolute_url(self):
@@ -43,6 +44,9 @@ class Category(models.Model):
 
 
 class Comment(models.Model):
+    """
+    This is a class to define comment of post for blog app 
+    """
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     profile = models.ForeignKey("accounts.profile", on_delete=models.CASCADE)
     content = models.TextField()
