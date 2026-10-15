@@ -1,22 +1,27 @@
 services:
-  # db:
-  #   image: postgres
-  #   volumes:
-  #     - ./data/db:/var/lib/postgresql/data
-  #   environment:
-  #     - POSTGRES_DB=postgres
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  backend:
-    build: .
-    container_name: backend
-    command: python manage.py runserver 0.0.0.0:8000
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - ./core:/app
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+
+  django-web:
+    build: .
+    container_name: django-docker
+    command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
-    environment:
-      - SECRET_KEY=test
-      - DEBUG=True
-    # depends_on:
-    #   - db
+    volumes:
+      - .:/app 
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+volumes:
+  postgres_data:
