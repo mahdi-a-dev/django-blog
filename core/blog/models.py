@@ -12,7 +12,7 @@ class Post(models.Model):
     content = models.TextField()
     image = models.ImageField(upload_to="post_images", default="post_images/post_default_image.png")
     status = models.BooleanField(default=False)
-    category = models.ForeignKey("Category", on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey("Category", on_delete=models.SET_NULL, null=True, related_name="posts")
 
     created_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
@@ -37,6 +37,7 @@ class Category(models.Model):
     This is a class to define category of post for blog app 
     """
     name = models.CharField(max_length=250)
+    slug = models.SlugField(max_length=250, unique=True)
     
     
     def __str__(self):
@@ -48,7 +49,7 @@ class Comment(models.Model):
     This is a class to define comment of post for blog app 
     """
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    profile = models.ForeignKey("accounts.profile", on_delete=models.CASCADE)
+    profile = models.ForeignKey("accounts.profile", on_delete=models.CASCADE, related_name="comments")
     content = models.TextField()
     
     # like_count = models.PositiveIntegerField(default=0)

@@ -129,7 +129,28 @@ class ChangeStatusPost(LoginRequiredMixin, UserPassesTestMixin, View):
         
         return redirect("accounts:profile")
         
+# ---------------- category views ----------------
+
+class CategoryPostList(ListView):
+    model = Post
+    template_name = "blog/category_posts.html"
+    context_object_name = "posts"
+    paginate_by = 10
     
+    def get_queryset(self):
+        self.category = get_object_or_404(
+            Category,
+            slug=self.kwargs["slug"]
+        )
+        
+        return self.category.posts.filter(status=True)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["category"] = self.category
+        return context
+    
+
 # ---------------- comments views ----------------
 
 
@@ -179,7 +200,7 @@ class EditComment(LoginRequiredMixin, UpdateView):
         )
 
 
-class DeleteComment(LoginRequiredMixin, DeleteView):
+""" class DeleteComment(LoginRequiredMixin, DeleteView):
     model = Post
     
     def get_queryset(self):
@@ -192,4 +213,4 @@ class DeleteComment(LoginRequiredMixin, DeleteView):
         return reverse(
             "blog:post-detail",
             kwargs={"pk": self.kwargs["post_id"]}
-        )
+        ) """
