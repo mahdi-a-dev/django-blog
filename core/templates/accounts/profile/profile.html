@@ -6,19 +6,20 @@
 
 {% block content %}
     <a href="{% url 'accounts:edit-profile' %}">Edit Profile</a>
+    <a href="{% url 'accounts:password-change' %}">Change password</a>
     
     {% if user.is_staff %}
         <a href="{% url 'blog:post-create' %}"> Create post</a>
     {% endif %}
-    
-    <h3>hello {{user.profile.first_name}}</h3>
-
+    <hr>
     {% if user.profile.image %}
         <img src="{{ user.profile.image.url }}" alt="" width="300" height="150">
     {% endif %}
+    <h3>{{user.profile.first_name}} {{user.profile.last_name}}</h3>
+
 
         {% if user.is_staff %}
-
+            <h2>My Posts</h2>
             <table border="5px">
 
                 <thead>
@@ -29,6 +30,10 @@
                         <th>Category</th>
                         <th>Status</th>
                         <th>Created Date</th>
+                        {% if user.is_superuser %}
+                        <th>Change status</th>
+                        {% endif %}
+
                     </tr>
                 </thead>
 
@@ -62,6 +67,18 @@
                                 <td>
                                     {{ post.published_date|date:"Y/m/d - H:i" }}
                                 </td>
+
+                                {% if user.is_superuser %}
+
+                                <td>
+                                    <form action="{% url 'blog:post-change-status' pk=post.id %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit">
+                                            Publish / Unpublish
+                                        </button>
+                                    </form>
+                                </td>                             
+                                {% endif %}
                             </tr>
                         {% endfor %}
 
@@ -70,4 +87,40 @@
                 </table>
 
         {% endif %}
+
+        <h2>My comments</h2>
+        <table border="5px">
+
+            <thead>
+                <tr>
+                        <th>Comment</th>
+                        <th>date</th>
+                        <th>Show</th>
+
+                </thead>
+
+                <tbody>
+                        {% for comment in user.profile.comments.all %}
+
+                            <tr>
+
+
+                                <td>
+                                    {{ comment.content|truncatewords:"10" }}
+                                </td>
+
+                                <td>
+                                    {{ comment.created_date|date:"Y/m/d - H:i" }}
+                                </td>
+
+                                <td>
+                                    <a href="{% url 'blog:post-detail' pk=comment.post.id %}">Show post</a>
+                                </td>
+
+                            </tr>
+                        {% endfor %}
+
+                    </tbody>
+    
+                </table>
 {% endblock %}

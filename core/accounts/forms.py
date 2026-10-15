@@ -5,6 +5,7 @@ from .models import Profile
 
 user = get_user_model()
 
+
 class RegisterForm(UserCreationForm):
     class Meta:
         model = user
