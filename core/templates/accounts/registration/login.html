@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base/base.html" %}
 
 {% block title %}Login{% endblock %}
 
@@ -7,4 +7,6 @@
         {{form.as_p}}
     <button type="submit">submit</button>
     </form>
+
+    <a href="{% url 'accounts:password-reset' %}"><p>Forgot password?</p></a>
 {% endblock %}

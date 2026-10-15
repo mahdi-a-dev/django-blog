@@ -19,13 +19,13 @@ from .models import Profile
 # ---------------- registration ----------------
 
 class CustomLoginView(LoginView):
-    template_name = "registration/login.html"
+    template_name = "accounts/registration/login.html"
     redirect_authenticated_user = True
     success_url = reverse_lazy("blog:post-list")
 
 
 class RegisterView(FormView):
-    template_name = "registration/register.html"
+    template_name = "accounts/registration/register.html"
     form_class = RegisterForm
     redirect_authenticated_user = True
     success_url = reverse_lazy("blog:post-list")

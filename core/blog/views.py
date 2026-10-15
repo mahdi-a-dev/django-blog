@@ -28,6 +28,8 @@ class PostList(ListView):
     queryset = Post.objects.filter(status=True)
     context_object_name = "posts"
     paginate_by = 10
+    template_name = "blog/post/post_list.html"
+
 
 
 class PostDetail(DetailView):
@@ -36,6 +38,7 @@ class PostDetail(DetailView):
     """ 
     model = Post
     context_object_name = "post"
+    template_name = "blog/post/post_detail.html"
     
     
     def get_context_data(self, **kwargs):
@@ -52,6 +55,7 @@ class CreatePost(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     """
     model = Post
     form_class = PostForm
+    template_name = "blog/post/post_form.html"
     success_url = reverse_lazy("accounts:profile")
     
     def get_context_data(self, **kwargs):
@@ -75,6 +79,7 @@ class UpdatePost(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     """
     model = Post
     form_class = PostForm
+    template_name = "blog/post/post_form.html"
     success_url = reverse_lazy("accounts:profile")
     
     def get_queryset(self):
@@ -97,6 +102,7 @@ class DeletePost(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     only authenticatec user can access.
     """
     model = Post
+    template_name = "blog/post/post_confirm_delete.html"
     success_url = reverse_lazy("accounts:profile")
     
     
@@ -133,7 +139,7 @@ class ChangeStatusPost(LoginRequiredMixin, UserPassesTestMixin, View):
 
 class CategoryPostList(ListView):
     model = Post
-    template_name = "blog/category_posts.html"
+    template_name = "blog/category/category_posts.html"
     context_object_name = "posts"
     paginate_by = 10
     
@@ -157,7 +163,7 @@ class CategoryPostList(ListView):
 class AddComment(LoginRequiredMixin, CreateView):
     model = Comment
     form_class = CommentForm
-    
+
     
     def get_post(self):
         return get_object_or_404(
@@ -183,7 +189,7 @@ class AddComment(LoginRequiredMixin, CreateView):
 class EditComment(LoginRequiredMixin, UpdateView):
     model = Comment
     form_class = CommentForm
-    template_name = "blog/edit-comment.html"
+    template_name = "blog/comment/edit-comment.html"
       
 
     def get_queryset(self):
