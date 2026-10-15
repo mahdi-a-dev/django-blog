@@ -5,7 +5,10 @@ from django.contrib.auth.views import (
     LoginView,
     PasswordChangeView,
     PasswordChangeDoneView,
-    PasswordResetView
+    PasswordResetView,
+    PasswordResetDoneView,
+    PasswordResetConfirmView,
+    PasswordResetCompleteView
 )
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
@@ -71,7 +74,7 @@ class EditProfile(LoginRequiredMixin, UpdateView):
         
         return context
 
-# ---------------- password change/reset ----------------
+# ---------------- password change ----------------
 
 class ChangePassword(PasswordChangeView):
     template_name = "accounts/password_change/password_change.html"
@@ -82,10 +85,23 @@ class ChangePasswordDone(PasswordChangeDoneView):
     template_name="accounts/password_change/password_change_done.html"
 
 
-# class ResetPassword(PasswordResetView):
-#     template_name = "accounts/password_reset.html"
-#     email_template_name = "accounts/password_reset_email.html"
-#     subject_template_name = "accounts/password_reset_subject.html"
+# ---------------- password reset ----------------
+
+class ResetPassword(PasswordResetView):
+    template_name = "accounts/password_reset/password_reset.html"
+    email_template_name = "accounts/password_reset/password_reset_email.html"
+    subject_template_name = "accounts/password_reset/password_reset_subject.txt"
     
-#     success_url = reverse_lazy("accounts:password-reset-done")
+    success_url = reverse_lazy("accounts:password-reset-done")
     
+
+class ResetPasswordDone(PasswordResetDoneView):
+    template_name = "accounts/password_reset/password_reset_done.html"
+
+
+class ResetPasswordConfirm(PasswordResetConfirmView):
+    template_name = "accounts/password_reset/password_reset_confirm.html"
+
+
+class ResetPasswordComplete(PasswordResetCompleteView):
+    template_name = "accounts/password_reset/password_reset_complete.html"
