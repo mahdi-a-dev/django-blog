@@ -23,6 +23,7 @@
     </div>
 
     <!-- Pagination -->
+    {% if is_paginated %}
     <div>
         <div class="pagination">
         <span class="step-links">
@@ -42,5 +43,6 @@
         </span>
         </div>
     </div>
+    {% endif %}
 
 {% endblock %}

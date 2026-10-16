@@ -25,10 +25,21 @@ class PostList(ListView):
     """
     Display a list of Posts Where status is True
     """
-    queryset = Post.objects.filter(status=True)
     context_object_name = "posts"
     paginate_by = 10
     template_name = "blog/post/post_list.html"
+    
+    def get_queryset(self):
+        search = self.request.GET.get("s")
+        if search:
+            return Post.objects.filter(status=True, title__icontains=search)
+        return Post.objects.filter(status=True)
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["categorys"] = Category.objects.all()
+        
+        return context
 
 
 
@@ -87,6 +98,9 @@ class UpdatePost(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     success_url = reverse_lazy("accounts:profile")
     
     def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Post.objects.all()
+        
         return Post.objects.filter(
             author=self.request.user.profile
         )

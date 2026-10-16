@@ -3,6 +3,10 @@
 {% block title %}Blog{% endblock %}
 
 {% block content %}
+    <h2>categorys: </h2>
+    {% for cat in categorys %}
+        <a href="{% url 'blog:category-posts' slug=cat.slug %}"><p>{{ cat.name }}</p></a>
+    {% endfor %}
     {% if user.is_authenticated %}
         <a href="{% url 'accounts:profile'%}">Profile</a>
         

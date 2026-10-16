@@ -6,7 +6,14 @@
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
-    <a href="{% url 'blog:post-list' %}"><h1>Blog</h1></a>
+    <a href="{% url 'blog:post-list' %}"><h1>Home</h1></a>
+    <form action="{% url 'blog:post-list' %}" method="get">
+    <input
+        type="search"
+        name="s"
+        placeholder="Search by title ..."
+    />
+    </form>
     <hr>
     {% block content%}
     {% endblock %}
