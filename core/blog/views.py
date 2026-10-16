@@ -37,7 +37,7 @@ class PostList(ListView):
         
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["categorys"] = Category.objects.all()
+        context["categories"] = Category.objects.all()
         
         return context
 
@@ -122,13 +122,7 @@ class DeletePost(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = "blog/post/post_confirm_delete.html"
     success_url = reverse_lazy("accounts:profile")
-    
-    
-    def get_queryset(self):
-        return Post.objects.filter(
-            author=self.request.user.profile
-        )
-    
+ 
     def test_func(self):
         return self.request.user.is_superuser
 

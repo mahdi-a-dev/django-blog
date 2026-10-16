@@ -4,7 +4,7 @@
 
 {% block content %}
     <h2>categorys: </h2>
-    {% for cat in categorys %}
+    {% for cat in categories %}
         <a href="{% url 'blog:category-posts' slug=cat.slug %}"><p>{{ cat.name }}</p></a>
     {% endfor %}
     {% if user.is_authenticated %}
