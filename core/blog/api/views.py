@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import PostSerializer
@@ -8,7 +8,7 @@ from ..models import Post
 
 
 @api_view(["GET", "POST"])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAdminUser])
 def post_list(request):
     # Show posts if method is GET
     if request.method == "GET":
@@ -22,11 +22,11 @@ def post_list(request):
            serializer.save()
            return Response(serializer.data)
         else:
-            return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["GET", "PUT", "DELETE"])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAdminUser])
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     
@@ -41,9 +41,9 @@ def post_detail(request, pk):
            serializer.save()
            return Response(serializer.data)
         else:
-            return Response(serializer.errors, status.HTTP_404_NOT_FOUND)
+            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
     # Delete giving post
     elif request.method == "DELETE":
         post.delete()
-        return Response({"detail": "item deleted successfully."}, status=status.HTTP_202_ACCEPTED)
+        return Response({"detail": "item deleted successfully."}, status=status.HTTP_201_CREATED)
         
