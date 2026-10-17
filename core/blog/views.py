@@ -17,6 +17,8 @@ from .models import Post, Category, Comment
 
 from django.utils import timezone
 
+from django.db.models import Q
+
 
 # ---------------- post views ----------------
 
@@ -26,7 +28,7 @@ class PostList(ListView):
     Display a list of Posts Where status is True
     """
     context_object_name = "posts"
-    paginate_by = 10
+    paginate_by = 9
     template_name = "blog/post/post_list.html"
     
     def get_queryset(self):
@@ -52,9 +54,19 @@ class PostDetail(DetailView):
     template_name = "blog/post/post_detail.html"
     
     def get_queryset(self):
-        return Post.objects.filter(
-            status=True
-        )
+        queryset = super().get_queryset()
+        user = self.request.user
+        
+        if user.is_superuser:
+            return queryset
+        
+        if user.is_authenticated:
+            return queryset.filter(
+                Q(status=True) |
+                Q(author__user=user)
+            )
+            
+        return queryset.filter(status=True)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -135,7 +147,7 @@ class ChangeStatusPost(LoginRequiredMixin, UserPassesTestMixin, View):
     def post(self, request, *args, **kwargs):
         post = get_object_or_404(
             Post,
-            pk=self.kwargs["pk"]
+            pk=kwargs["pk"]
         )
         
         post.status = not post.status
@@ -153,7 +165,7 @@ class CategoryPostList(ListView):
     model = Post
     template_name = "blog/category/category_posts.html"
     context_object_name = "posts"
-    paginate_by = 10
+    paginate_by = 9
     
     def get_queryset(self):
         self.category = get_object_or_404(
@@ -218,8 +230,10 @@ class EditComment(LoginRequiredMixin, UpdateView):
         )
 
 
-""" class DeleteComment(LoginRequiredMixin, DeleteView):
-    model = Post
+class DeleteComment(LoginRequiredMixin, DeleteView):
+    model = Comment
+    template_name = "blog/comment/comment_confirm_delete.html"
+
     
     def get_queryset(self):
         return Comment.objects.filter(
@@ -231,4 +245,4 @@ class EditComment(LoginRequiredMixin, UpdateView):
         return reverse(
             "blog:post-detail",
             kwargs={"pk": self.kwargs["post_id"]}
-        ) """
+        )

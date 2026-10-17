@@ -30,7 +30,7 @@ urlpatterns = [
     # edit, only authenticated users
     path("post/<int:post_id>/comment/<int:pk>/edit", views.EditComment.as_view(), name="edit-comment"),
     # delete, only authenticated users
-    # path("post/<int:post_id>/comment/<int:pk>/delete", views.DeleteComment.as_view(), name="delete-comment"),
+    path("post/<int:post_id>/comment/<int:pk>/delete", views.DeleteComment.as_view(), name="delete-comment"),
     
     # api
     path("api/", include("blog.api.urls"))
