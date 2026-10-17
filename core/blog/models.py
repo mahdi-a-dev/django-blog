@@ -10,7 +10,7 @@ class Post(models.Model):
     author = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
     content = models.TextField()
-    image = models.ImageField(upload_to="post_images", default="post_images/post_default_image.png")
+    image = models.ImageField(upload_to="post_images", default="static/asset/post_default_image.png")
     status = models.BooleanField(default=False)
     category = models.ForeignKey("Category", on_delete=models.SET_NULL, null=True, related_name="posts")
 
@@ -51,9 +51,6 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     profile = models.ForeignKey("accounts.profile", on_delete=models.CASCADE, related_name="comments")
     content = models.TextField()
-    
-    # like_count = models.PositiveIntegerField(default=0)
-    # dislike_count = models.PositiveIntegerField(default=0)
     
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
