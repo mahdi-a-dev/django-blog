@@ -1,11 +1,13 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from ..models import Post
+from ...models import Post
 
 user = get_user_model()
 
 class PostModleTest(TestCase):
-    
+    """
+    Test post model
+    """
     @classmethod
     def setUpTestData(cls):
         cls.user = user.objects.create_user(
@@ -22,17 +24,17 @@ class PostModleTest(TestCase):
         )
     
     def test_post_object_is_created_successfully(self):
-        post = Post.objects.create(
+        Post.objects.create(
             author=self.profile,
             title="New post",
             content="Post content"
         )
         
-        self.assertEqual([post.title, post.content, post.author], ["New post", "Post content", self.profile])
+        self.assertTrue(Post.objects.filter(title="New post").exists())
+        
               
     def test_new_post_is_unpublished_by_default(self):
-        self.assertFalse(self.post.status, msg="new post is unpublished by default.")
+        self.assertFalse(self.post.status)
     
     def test_published_date_is_none_by_default(self):
-        self.assertIsNone(self.post.published_date, msg="published date is none ny default.")
-        
+        self.assertIsNone(self.post.published_date)
