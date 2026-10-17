@@ -20,7 +20,7 @@ def post_list(request):
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
            serializer.save()
-           return Response(serializer.data)
+           return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -39,11 +39,11 @@ def post_detail(request, pk):
         serializer = PostSerializer(post, data=request.data)
         if serializer.is_valid():
            serializer.save()
-           return Response(serializer.data)
+           return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
     # Delete giving post
     elif request.method == "DELETE":
         post.delete()
-        return Response({"detail": "item deleted successfully."}, status=status.HTTP_201_CREATED)
+        return Response({"detail": "item deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
         
