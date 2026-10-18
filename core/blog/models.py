@@ -10,7 +10,7 @@ class Post(models.Model):
     author = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
     content = models.TextField()
-    image = models.ImageField(upload_to="post_images", default="static/asset/post_default_image.png")
+    image = models.ImageField(upload_to="post_images", null=True, blank=True)
     status = models.BooleanField(default=False)
     category = models.ForeignKey("Category", on_delete=models.SET_NULL, null=True, related_name="posts")
 

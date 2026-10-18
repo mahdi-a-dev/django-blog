@@ -58,7 +58,7 @@ class Profile(models.Model):
     last_name = models.CharField(max_length=250, blank=True)
     
     image = models.ImageField(
-        null=True, blank=True, upload_to="profile_images", default="static/asset/profile_default_image.png"
+        upload_to="profile_images", null=True, blank=True
         )
     description = models.TextField(blank=True)
     
