@@ -10,6 +10,8 @@ from django.views.generic import (
 )
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy, reverse
 
 from .forms import PostForm, CommentForm
@@ -32,9 +34,15 @@ class PostList(ListView):
     template_name = "blog/post/post_list.html"
     
     def get_queryset(self):
-        search = self.request.GET.get("s")
-        if search:
-            return Post.objects.filter(status=True, title__icontains=search)
+        search_query = self.request.GET.get("s")
+        
+        posts = Post.objects.filter(status=True)
+        
+        if search_query:
+            return posts.filter(
+                Q(title__icontains=search_query) |
+                Q(category__name__icontains=search_query)
+            )
         return Post.objects.filter(status=True)
         
     def get_context_data(self, **kwargs):
@@ -75,7 +83,7 @@ class PostDetail(DetailView):
         return context
 
 
-class CreatePost(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+class CreatePost(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
     """
     Display a Post creation form,
     only authenticatec user can access.
@@ -84,6 +92,7 @@ class CreatePost(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = PostForm
     template_name = "blog/post/post_form.html"
     success_url = reverse_lazy("accounts:profile")
+    success_message = "Post created successfully."
     
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
@@ -99,7 +108,7 @@ class CreatePost(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return self.request.user.is_staff
 
 
-class UpdatePost(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class UpdatePost(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
     """
     Display a Post Update form,
     only authenticatec user can access.
@@ -108,6 +117,7 @@ class UpdatePost(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = PostForm
     template_name = "blog/post/post_form.html"
     success_url = reverse_lazy("accounts:profile")
+    success_message = "Post updated successfully."
     
     def get_queryset(self):
         if self.request.user.is_superuser:
@@ -134,6 +144,11 @@ class DeletePost(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = "blog/post/post_confirm_delete.html"
     success_url = reverse_lazy("accounts:profile")
+    
+    def form_valid(self, form):
+        messages.success(self.request, "Post deleted successfully.")
+        
+        return super().form_valid(form)
  
     def test_func(self):
         return self.request.user.is_superuser
