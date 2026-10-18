@@ -1,42 +1,77 @@
 {% extends "base/base.html" %}
-
-{% block title %}
-    {{ post.title }}
-{% endblock %}
+{% load static %}
+{% load humanize %}
+{% block title %}{{ post.title }}{% endblock %}
 
 {% block content %}
-    <h2>{{ post.title }}</h1>
-    <hr>
-    <div>
-        {% if post.image %}
-            <img src="{{ post.image.url }}" alt="{{ post.title }}" width="600" height="400">
-        {% endif %}
-        <h3>{{ post.content }}</h3>
-        <h3>Category: {{ post.category }}</h3>
-        <h4>Published: {{ post.published_date|date:"Y/m/d - H:I" }}</h4>
-    </div>
-    <hr>
-    <div>
-        <h3>Comments</h3>
-        
-        {% if user.is_authenticated %}
-        <form method="post" action="{% url 'blog:add-comment' post_id=post.id %}">
-            {% csrf_token %}
-            {{ comment_form.as_p }}
-            <button type="submit">Add comment</button>
-        </form>
-        {% else %}
-        <p>Enter your account to add comment.</p>
-        <a href="{% url 'accounts:login' %}">login</a>
-        {% endif %}
-        
-        {% for comment in post.comments.all %}
-            <p>{{ comment.profile.user.email }}</p>
-            <p>{{ comment.content }}</p>
-            <p>---------------</p>
-            {% if user.is_authenticated and comment.profile.user == user %}
-            <a href="{% url 'blog:edit-comment' post_id=post.id pk=comment.id %}">Edit</a>
+    <article class="post-detail">
+        <header class="post-detail-header">
+            {% if post.category %}
+                <a href="{% url 'blog:category-posts' slug=post.category.slug %}" class="post-detail-category">{{ post.category.name }}</a>
             {% endif %}
-        {% endfor %}
-    </div>
+            <h1 class="post-detail-title">{{ post.title }}</h1>
+            <div class="post-detail-meta">
+                {% if post.author.first_name and post.author.last_name %}
+                    <span class="post-card-meta-item">By {{ post.author.first_name }} {{ post.author.last_name }}</span>
+                {% else %}
+                    <span class="post-card-meta-item">By {{ post.author }}</span>
+                {% endif %}
+                <span>Published {{ post.published_date|naturaltime }}</span>
+            </div>
+        </header>
+
+        {% if post.image %}
+            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-detail-image">
+        {% endif %}
+
+        <div class="post-detail-content">
+            {{ post.content|safe }}
+        </div>
+
+        <section class="comments-section">
+            <h2 class="comments-title">Comments ({{ post.comments.count }})</h2>
+            
+            {% if user.is_authenticated %}
+                <div class="comment-form">
+                    <form method="post" action="{% url 'blog:add-comment' post_id=post.id %}">
+                        {% csrf_token %}
+                        <div class="comment-form-group">
+                            <label class="comment-form-label" for="{{ comment_form.content.id_for_label }}">Add a comment</label>
+                            {{ comment_form.content }}
+                            {% if comment_form.content.errors %}
+                                <div class="form-errors">{{ comment_form.content.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Comment</button>
+                    </form>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <p>Please <a href="{% url 'accounts:login' %}">login</a> to add a comment.</p>
+                </div>
+            {% endif %}
+            
+            <div class="comment-list">
+                {% for comment in post.comments.all %}
+                    <div class="comment-card">
+                        <div class="comment-header">
+                            <span class="comment-author">{{ comment.profile.user.email }}</span>
+                            <span class="comment-date">{{ comment.created_date|naturaltime }}</span>
+                        </div>
+                        <div class="comment-content">{{ comment.content }}</div>
+                        {% if user.is_authenticated and comment.profile.user == user %}
+                            <div class="comment-actions">
+                                <a href="{% url 'blog:edit-comment' post_id=post.id pk=comment.id %}" class="btn btn-sm">Edit</a>
+                                <a href="{% url 'blog:delete-comment' post_id=post.id pk=comment.id %}" class="btn btn-sm btn-danger">Delete</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <div class="empty-state">
+                        <p class="text-muted">No comments yet. Be the first to comment!</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </article>
 {% endblock %}

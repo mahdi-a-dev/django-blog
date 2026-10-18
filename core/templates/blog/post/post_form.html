@@ -1,12 +1,29 @@
 {% extends "base/base.html" %}
-
-{% block title %}
-    {{ title }}
-{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-    <form method="post" enctype="multipart/form-data">{% csrf_token %}
-        {{form.as_p}}
-    <button type="submit">submit</button>
-    </form>
+    <div class="form-card form-card-large">
+        <div class="page-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 1.5rem;">
+            <h1 class="page-title" style="font-size: 1.75rem;">{{ title }}</h1>
+        </div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <div class="help-text">{{ field.help_text }}</div>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="form-errors">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <a href="{% url 'accounts:profile' %}" class="btn">Cancel</a>
+            </div>
+        </form>
+    </div>
 {% endblock %}

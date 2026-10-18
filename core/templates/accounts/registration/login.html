@@ -1,12 +1,26 @@
 {% extends "base/base.html" %}
-
 {% block title %}Login{% endblock %}
 
 {% block content %}
-    <form method="post">{% csrf_token %}
-        {{form.as_p}}
-    <button type="submit">submit</button>
-    </form>
-
-    <a href="{% url 'accounts:password-reset' %}"><p>Forgot password?</p></a>
+    <div class="form-card">
+        <div class="page-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 1.5rem;">
+            <h1 class="page-title" style="font-size: 1.75rem;">Login</h1>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="form-errors">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Login</button>
+        </form>
+        <div class="text-center mt-3">
+            <a href="{% url 'accounts:password-reset' %}" style="color: var(--text-secondary); font-size: 0.9rem;">Forgot password?</a>
+        </div>
+    </div>
 {% endblock %}

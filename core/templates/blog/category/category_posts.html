@@ -1,48 +1,58 @@
 {% extends "base/base.html" %}
-
-{% block title %}Blog{% endblock %}
+{% load static %}
+{% load humanize %}
+{% block title %}{{ category.name }}{% endblock %}
 
 {% block content %}
-    <h2>{{category.name}}</h2>
-    <div>
+    <div class="page-header">
+        <h1 class="page-title">{{ category.name }}</h1>
+        <p class="page-subtitle">Posts in {{ category.name }} category</p>
+    </div>
+
+    <div class="posts-grid">
         {% for post in posts %}
-            <a href="{{ post.get_absolute_url }}"><h2>{{ post.title }}</h2></a>
-            {% if post.image %}
-                <img src="{{ post.image.url }}" alt="{{ post.title }}" width="400" height="200">
-            {% else %}
-                There is no image.
-            {% endif %}
-            <h3>{{ post.content|truncatewords:"15" }}</h3>
-            <h3>Category: {{ post.category }}</h3>
-            <h3>Author: {{post.author }}</h3>
-            <h4>Published: {{ post.published_date|date:"Y/m/d - H:i" }}</h4>
-        <hr>
+            <article class="post-card">
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-card-image">
+                {% else %}
+                    <img src="{% static 'asset/post_detault_image.png' %}" alt="{{ post.title }}" class="post-card-image">
+                {% endif %}
+                <div class="post-card-content">
+                    <h2 class="post-card-title">
+                        <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                    </h2>
+                    <div class="post-card-meta">
+                        {% if post.author.first_name and post.author.last_name %}
+                            <span class="post-card-meta-item">By {{ post.author.first_name }} {{ post.author.last_name }}</span>
+                        {% else %}
+                            <span class="post-card-meta-item">By {{ post.author }}</span>
+                        {% endif %}
+                        <span class="post-card-meta-item">{{ post.published_date|naturaltime }}</span>
+                    </div>
+                </div>
+            </article>
         {% empty %}
-            There is not post yet.
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <div class="empty-state-icon">📂</div>
+                <h3 class="empty-state-title">No posts in this category</h3>
+                <p class="empty-state-text">There are no posts in {{ category.name }} yet.</p>
+            </div>
         {% endfor %}
     </div>
 
-    <!-- Pagination -->
     {% if is_paginated %}
-    <div>
-        <div class="pagination">
-        <span class="step-links">
-            {% if page_obj.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-            {% endif %}
+    <nav class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="pagination-link">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">Previous</a>
+        {% endif %}
 
-        <span class="current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-        </span>
+        <span class="pagination-current">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
 
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">next</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-            {% endif %}
-        </span>
-        </div>
-    </div>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-link">Last &raquo;</a>
+        {% endif %}
+    </nav>
     {% endif %}
-
 {% endblock %}

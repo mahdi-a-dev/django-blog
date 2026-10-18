@@ -1,131 +1,132 @@
 {% extends "base/base.html" %}
-
-{% block title %}
-    {{ user.profile.firstname }}
-{% endblock %}
+{% load static %}
+{% load humanize %}
+{% block title %}Profile{% endblock %}
 
 {% block content %}
-    <a href="{% url 'accounts:edit-profile' %}">Edit Profile</a>
-    <a href="{% url 'accounts:password-change' %}">Change password</a>
-    
+    <div class="profile-header">
+        {% if user.profile.image %}
+            <img src="{{ user.profile.image.url }}" alt="{{ user.profile.first_name }}" class="profile-avatar">
+        {% else %}
+            <img src="{% static 'asset/profile_default_image.jpg' %}" alt="Profile" class="profile-avatar">
+        {% endif %}
+        <div class="profile-info">
+            <h1 class="profile-name">{{ user.profile.first_name }} {{ user.profile.last_name }}</h1>
+            <p class="profile-email">{{ user.email }}</p>
+            {% if user.profile.description %}
+                <p class="profile-bio">{{ user.profile.description }}</p>
+            {% endif %}
+            <div class="profile-actions">
+                <a href="{% url 'accounts:edit-profile' %}" class="btn btn-sm">Edit Profile</a>
+                <a href="{% url 'accounts:password-change' %}" class="btn btn-sm">Change Password</a>
+                {% if user.is_staff %}
+                    <a href="{% url 'blog:post-create' %}" class="btn btn-primary btn-sm">Create Post</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
     {% if user.is_staff %}
-        <a href="{% url 'blog:post-create' %}"> Create post</a>
-    {% endif %}
-    <hr>
-    {% if user.profile.image %}
-        <img src="{{ user.profile.image.url }}" alt="" width="300" height="150">
-    {% endif %}
-    <h3>{{user.profile.first_name}} {{user.profile.last_name}}</h3>
-
-
-        {% if user.is_staff %}
-            <h2>My Posts</h2>
-            <table border="5px">
-
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Content</th>
-                        <th>Image</th>
-                        <th>Category</th>
-                        <th>Status</th>
-                        <th>Published date</th>
-                        <th>Update post</th>
-                        {% if user.is_superuser %}
-                        <th>Change status</th>
-                        {% endif %}
-
-                    </tr>
-                </thead>
-
-                <tbody>
+        <section class="mb-3">
+            <h2 class="page-title" style="font-size: 1.5rem; margin-bottom: 1rem;">My Posts</h2>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Image</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Published</th>
+                            <th>Preview</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {% for post in my_posts %}
-
                             <tr>
-
-                                <td>
-                                    {{ post.title }}
-                                </td>
-
-                                <td>
-                                    {{ post.content|truncatewords:"10" }}
-                                </td>
-
+                                <td><a href="{{ post.get_absolute_url }}">{{ post.title|truncatewords:"3" }}</a></td>
                                 <td>
                                     {% if post.image %}
-                                        <img src="{{ post.image.url }}" alt="{{ post.title }}" width="200" height="100">
-                                    {% endif %}                     
+                                        <a href="{{ post.image.url }}">
+                                            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="table-image">
+                                        </a>
+                                    {% else %}
+                                        <span style="color: var(--text-tertiary);">No image</span>
+                                    {% endif %}
                                 </td>
-
+                                <td>{{ post.category|default:"-" }}</td>
                                 <td>
-                                    {{ post.category }}
+                                    {% if post.status %}
+                                        <span class="badge badge-success">Published</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Draft</span>
+                                    {% endif %}
                                 </td>
-
+                                <td>{{ post.published_date|date:"Y/m/d H:i"|default:"-" }}</td>
+                                <td><a href="{% url 'blog:post-detail' pk=post.id %}" class="btn btn-sm">Preview</a></td>
                                 <td>
-                                    {{ post.status }}
+                                    <div class="table-actions">
+                                        <a href="{% url 'blog:post-edit' pk=post.id %}" class="btn btn-sm">Edit</a>
+                                        {% if user.is_superuser %}
+                                            <form action="{% url 'blog:post-change-status' pk=post.id %}" method="post" style="display: inline;">
+                                                {% csrf_token %}
+
+                                                {% if post.status %}
+                                                    <button type="submit" class="btn btn-sm">Unpublish</button>
+                                                {% else %}
+                                                    <button type="submit" class="btn btn-sm">Published</button>
+                                                {% endif %}
+                                            </form>
+                                            <a href="{% url 'blog:post-delete' pk=post.id %}" class="btn btn-sm btn-danger">Delete</a>
+                                        {% endif %}
+                                    </div>
                                 </td>
-
-                                <td>
-                                    {{ post.published_date|date:"Y/m/d - H:i" }}
-                                </td>
-
-                                <td>
-                                    <a href="{% url 'blog:post-edit' pk=post.id %}">Edit</a>
-                                </td>
-
-                                {% if user.is_superuser %}
-
-                                <td>
-                                    <form action="{% url 'blog:post-change-status' pk=post.id %}" method="post">
-                                        {% csrf_token %}
-                                        <button type="submit">
-                                            Publish / Unpublish
-                                        </button>
-                                    </form>
-                                </td>                             
-                                {% endif %}
                             </tr>
-                        {% endfor %}
-
-                    </tbody>
-    
-                </table>
-
-        {% endif %}
-
-        <h2>My comments</h2>
-        <table border="5px">
-
-            <thead>
-                <tr>
-                        <th>Comment</th>
-                        <th>date</th>
-                        <th>Show</th>
-
-                </thead>
-
-                <tbody>
-                        {% for comment in user.profile.comments.all %}
-
+                        {% empty %}
                             <tr>
-
-
-                                <td>
-                                    {{ comment.content|truncatewords:"10" }}
-                                </td>
-
-                                <td>
-                                    {{ comment.created_date|date:"Y/m/d - H:i" }}
-                                </td>
-
-                                <td>
-                                    <a href="{% url 'blog:post-detail' pk=comment.post.id %}">Show post</a>
-                                </td>
-
+                                <td colspan="8" class="text-center" style="color: var(--text-secondary);">No posts yet</td>
                             </tr>
                         {% endfor %}
-
                     </tbody>
-    
                 </table>
+            </div>
+        </section>
+    {% endif %}
+
+    <section>
+        <h2 class="page-title" style="font-size: 1.5rem; margin-bottom: 1rem;">My Comments</h2>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Comment</th>
+                        <th>Date</th>
+                        <th>Post</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for comment in user.profile.comments.all %}
+                        <tr>
+                            <td>{{ comment.content|truncatewords:"15" }}</td>
+                            <td>{{ comment.created_date|date:"Y/m/d H:i" }}</td>
+                            <td><a href="{% url 'blog:post-detail' pk=comment.post.id %}">{{ comment.post.title|truncatewords:"6" }}</a></td>
+                            <td>
+                                <div class="table-actions">
+                                    <a href="{% url 'blog:post-detail' pk=comment.post.id %}" class="btn btn-sm">View</a>
+                                    <a href="{% url 'blog:edit-comment' post_id=comment.post.id pk=comment.pk %}" class="btn btn-sm">Edit</a>
+                                    <a href="{% url 'blog:delete-comment' post_id=comment.post.id pk=comment.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center" style="color: var(--text-secondary);">No comments yet</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
 {% endblock %}

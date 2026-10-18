@@ -1,14 +1,19 @@
 {% extends "base/base.html" %}
-
-{% block title %}
-    Delete {{ object }}
-{% endblock %}
+{% block title %}Delete {{ object }}{% endblock %}
 
 {% block content %}
-    <form method="post">{% csrf_token %}
-        <p>Are you sure you want to delete "{{ object }}"?</p>
-        {{ form }}
-        <input type="submit" value="Confirm">
-        <a href="{% url 'blog:post-list' %}">back</a>
-    </form>
+    <div class="form-card">
+        <div class="page-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 1.5rem;">
+            <h1 class="page-title" style="font-size: 1.5rem;">Confirm Deletion</h1>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <p class="mb-2" style="color: var(--text-primary);">Are you sure you want to delete "{{ object }}"?</p>
+            {{ form }}
+            <div class="btn-group">
+                <input type="submit" value="Confirm Delete" class="btn btn-danger">
+                <a href="{% url 'accounts:profile' %}" class="btn">Cancel</a>
+            </div>
+        </form>
+    </div>
 {% endblock %}
