@@ -12,7 +12,7 @@ from django.contrib.auth.views import (
 )
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from .forms import RegisterForm, ProfileForm
+from .forms import RegisterForm, LoginForm, ProfileForm
 from blog.models import Post
 from .models import Profile
 
@@ -20,8 +20,9 @@ from .models import Profile
 
 class CustomLoginView(LoginView):
     template_name = "accounts/registration/login.html"
+    authentication_form = LoginForm
     redirect_authenticated_user = True
-    success_url = reverse_lazy("blog:post-list")
+    success_url = reverse_lazy("accounts:profile")
 
 
 class RegisterView(FormView):

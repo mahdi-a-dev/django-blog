@@ -60,7 +60,7 @@ class Profile(models.Model):
     image = models.ImageField(
         upload_to="profile_images", null=True, blank=True
         )
-    description = models.TextField(blank=True)
+    description = models.TextField(max_length=500, blank=True)
     
     created_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
