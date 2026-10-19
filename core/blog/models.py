@@ -9,7 +9,7 @@ class Post(models.Model):
     
     author = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
-    content = models.TextField()
+    content = models.TextField(max_length=30000)
     image = models.ImageField(upload_to="post_images", null=True, blank=True)
     status = models.BooleanField(default=False)
     category = models.ForeignKey("Category", on_delete=models.SET_NULL, null=True, related_name="posts")
@@ -50,7 +50,7 @@ class Comment(models.Model):
     """
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     profile = models.ForeignKey("accounts.profile", on_delete=models.CASCADE, related_name="comments")
-    content = models.TextField()
+    content = models.TextField(max_length=1000)
     
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
