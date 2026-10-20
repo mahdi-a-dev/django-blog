@@ -44,6 +44,11 @@ class Category(models.Model):
         return self.name
 
 
+class CommentManager(models.Manager):
+    def parents(self):
+        return self.filter(parent__isnull=True)
+    
+    
 class Comment(models.Model):
     """
     This is a class to define comment of post for blog app 
@@ -52,8 +57,18 @@ class Comment(models.Model):
     profile = models.ForeignKey("accounts.profile", on_delete=models.CASCADE, related_name="comments")
     content = models.TextField(max_length=1000)
     
+    # post replies
+    parent = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="replies"
+    )
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
+    
+    objects = CommentManager()
 
     
     def __str__(self):

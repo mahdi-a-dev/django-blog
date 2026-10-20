@@ -225,6 +225,46 @@ class AddComment(LoginRequiredMixin, CreateView):
         )
 
 
+class ReplyComment(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = "blog/comment/reply_comment.html"
+
+    
+    def get_post(self):
+        return get_object_or_404(
+            Post,
+            pk=self.kwargs["post_id"]
+        )
+
+    def get_parent(self):
+        return get_object_or_404(
+            Comment,
+            pk=self.kwargs["pk"]
+        )
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["post"] = self.get_post()
+        context["parent"] = self.get_parent()
+        
+        return context
+
+    def form_valid(self, form):
+        form.instance.profile = self.request.user.profile
+        form.instance.post = self.get_post()
+        form.instance.parent = self.get_parent()
+        
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        
+        return reverse(
+            "blog:post-detail",
+            kwargs={"pk": self.kwargs["post_id"]}
+        )
+
+
 class EditComment(LoginRequiredMixin, UpdateView):
     model = Comment
     form_class = CommentForm

@@ -1,0 +1,25 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}Reply{% endblock %}
+
+{% block content %}
+    <div class="form-card">
+        <div class="page-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 1.5rem;">
+            <h1 class="page-title" style="font-size: 1.5rem;">Reply  '{{parent.content|truncatechars:"10"}}'</h1>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{form.content}}
+                {% if form.content.errors %}
+                    <div class="form-errors">{{ form.content.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Add Comment</button>
+                <a href="{% url 'blog:post-detail' pk=post.id %}" class="btn">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

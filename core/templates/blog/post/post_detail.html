@@ -52,12 +52,14 @@
             {% endif %}
             
             <div class="comment-list">
-                {% for comment in post.comments.all %}
+                <!-- Comments with no parents -->
+                {% for comment in post.comments.parents %}
                     <div class="comment-card">
                         <div class="comment-header">
                             <span class="comment-author">{{ comment.profile.user.email }}</span>
                             <span class="comment-date">{{ comment.created_date|naturaltime }}</span>
                         </div>
+                        <a href="{% url 'blog:reply-comment' post_id=post.pk pk=comment.id%}">reply</a>
                         <div class="comment-content">{{ comment.content }}</div>
                         {% if user.is_authenticated and comment.profile.user == user %}
                             <div class="comment-actions">
@@ -65,6 +67,23 @@
                                 <a href="{% url 'blog:delete-comment' post_id=post.id pk=comment.id %}" class="btn btn-sm btn-danger">Delete</a>
                             </div>
                         {% endif %}
+                    <!-- Replies for this comment-->
+                    {% for reply in comment.replies.all %}
+                    <div class="comment-card">
+                        <div class="comment-header">
+                            <span class="comment-author">{{ reply.profile.user.email }}</span>
+                            <span class="comment-date">{{ reply.created_date|naturaltime }}</span>
+                        </div>
+                        <a href="{% url 'blog:reply-comment' post_id=post.pk pk=comment.id%}">reply</a>
+                        <div class="comment-content">{{ reply.content }}</div>
+                        {% if user.is_authenticated and reply.profile.user == user %}
+                            <div class="comment-actions">
+                                <a href="{% url 'blog:edit-comment' post_id=post.id pk=comment.id %}" class="btn btn-sm">Edit</a>
+                                <a href="{% url 'blog:delete-comment' post_id=post.id pk=comment.id %}" class="btn btn-sm btn-danger">Delete</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
                     </div>
                 {% empty %}
                     <div class="empty-state">

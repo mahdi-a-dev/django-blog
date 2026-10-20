@@ -27,6 +27,8 @@ urlpatterns = [
     
     # add, only authenticated users
     path("post/<int:post_id>/comment/add", views.AddComment.as_view(), name="add-comment"),
+    # reply, only authenticated users
+    path("post/<int:post_id>/comment/<int:pk>/reply", views.ReplyComment.as_view(), name="reply-comment"),
     # edit, only authenticated users
     path("post/<int:post_id>/comment/<int:pk>/edit", views.EditComment.as_view(), name="edit-comment"),
     # delete, only authenticated users
