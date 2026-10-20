@@ -16,7 +16,9 @@ from .forms import RegisterForm, LoginForm, ProfileForm
 from blog.models import Post
 from .models import Profile
 
+
 # ---------------- registration ----------------
+
 
 class CustomLoginView(LoginView):
     template_name = "accounts/registration/login.html"
@@ -42,7 +44,9 @@ class RegisterView(FormView):
             return redirect("blog:post-list")
         return super(RegisterView, self).get(*args, **kwargs)
     
+    
 # ---------------- profile ----------------
+
 
 class ProfilePage(LoginRequiredMixin, TemplateView):
     template_name = "accounts/profile/profile.html"
@@ -75,7 +79,9 @@ class EditProfile(LoginRequiredMixin, UpdateView):
         
         return context
 
+
 # ---------------- password change ----------------
+
 
 class ChangePassword(PasswordChangeView):
     template_name = "accounts/password_change/password_change.html"
@@ -87,6 +93,7 @@ class ChangePasswordDone(PasswordChangeDoneView):
 
 
 # ---------------- password reset ----------------
+
 
 class ResetPassword(PasswordResetView):
     template_name = "accounts/password_reset/password_reset.html"
@@ -103,6 +110,7 @@ class ResetPasswordDone(PasswordResetDoneView):
 class ResetPasswordConfirm(PasswordResetConfirmView):
     template_name = "accounts/password_reset/password_reset_confirm.html"
     success_url = reverse_lazy("accounts:password-reset-complete")
+
 
 class ResetPasswordComplete(PasswordResetCompleteView):
     template_name = "accounts/password_reset/password_reset_complete.html"

@@ -7,6 +7,9 @@ from ...models import Profile
 user = get_user_model()
 
 class EditProfileTests(TestCase):
+    """
+    Test EditProfile, only authenticated user can access
+    """
     def setUp(self):
         self.regular_user = user.objects.create_user(
             email="regular@gmail.com",
@@ -39,7 +42,7 @@ class EditProfileTests(TestCase):
         """
         Test anonymous user get redirect to login with POST method
         """
-        response = self.client.get(
+        response = self.client.post(
             reverse("accounts:edit-profile"),
             data=self.valid_profile_data
         )

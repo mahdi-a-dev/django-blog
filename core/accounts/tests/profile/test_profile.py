@@ -6,6 +6,9 @@ from blog.models import Post
 user = get_user_model()
 
 class ProfileTests(TestCase):
+    """
+    Test ProfileView, only authenticated user can access
+    """
     def setUp(self):
         self.regular_user = user.objects.create_user(
             email="regular@gmail.com",
