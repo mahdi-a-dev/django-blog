@@ -26,15 +26,6 @@ class CategoryPostListTests(TestCase):
         )
         
         # create 12 posts for testing pagination
-        for i in range(12):
-            Post.objects.create(
-                author=cls.profile,
-                title=f"post {i}",
-                content=f"content {i}",
-                category=cls.category,
-                status=True
-            )
-            
         # published post with status == True
         cls.published_post = Post.objects.create(
             author=cls.profile,
@@ -51,6 +42,16 @@ class CategoryPostListTests(TestCase):
             content="unpublished post content",
             category=cls.category
         )
+        
+        for i in range(12):
+            Post.objects.create(
+                author=cls.profile,
+                title=f"post {i}",
+                content=f"content {i}",
+                category=cls.category,
+                status=True
+            )
+            
         
     def test_only_published_posts_are_displayed(self):
         """

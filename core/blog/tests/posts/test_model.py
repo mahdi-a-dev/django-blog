@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from ...models import Post
 
 user = get_user_model()
@@ -38,3 +39,9 @@ class PostModleTest(TestCase):
     
     def test_published_date_is_none_by_default(self):
         self.assertIsNone(self.post.published_date)
+        
+    def test_get_absolute_url(self):
+        self.assertEqual(
+            self.post.get_absolute_url(),
+            reverse("blog:post-detail", kwargs={"pk": self.post.id})
+        )

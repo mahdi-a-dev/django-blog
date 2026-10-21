@@ -6,4 +6,6 @@ __pycache__/
 *.py[cod]
 *.sqlite3
 
+.git/
+.gitignore
 staticfiles/

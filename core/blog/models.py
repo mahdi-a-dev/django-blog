@@ -29,7 +29,7 @@ class Post(models.Model):
     
     
     class Meta:
-        ordering = ["-created_date"]
+        ordering = ["-status", "-published_date"]
     
 
 class Category(models.Model):
@@ -39,6 +39,8 @@ class Category(models.Model):
     name = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250, unique=True)
     
+    def get_absolute_url(self):
+        return reverse("blog:category-posts", kwargs={"slug": self.slug})
     
     def __str__(self):
         return self.name
