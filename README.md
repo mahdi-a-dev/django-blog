@@ -15,10 +15,8 @@ cp .env.example .env      # fill in SECRET_KEY, database and email settings
 docker compose up --build
 ```
 
-App runs at <http://localhost:8000/>.
 
-<details>
-<summary>Run locally without Docker</summary>
+Run locally without Docker
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
@@ -28,11 +26,11 @@ cd core
 python manage.py migrate
 python manage.py runserver
 ```
-</details>
+
 
 ## Roles
 
-| | Anonymous | User | Staff | Superuser |
+| Actions | Anonymous | User | Staff | Superuser |
 |---|:-:|:-:|:-:|:-:|
 | Read published posts | ✅ | ✅ | ✅ | ✅ |
 | Comment / reply | | ✅ | ✅ | ✅ |
