@@ -43,7 +43,7 @@ class PostList(ListView):
                 Q(title__icontains=search_query) |
                 Q(category__name__icontains=search_query)
             )
-        return Post.objects.filter(status=True)
+        return posts
         
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -202,12 +202,14 @@ class CategoryPostList(ListView):
 class AddComment(LoginRequiredMixin, CreateView):
     model = Comment
     form_class = CommentForm
+    template_name = "blog/posts/post_detail.html"
 
     
     def get_post(self):
         return get_object_or_404(
             Post,
-            pk=self.kwargs["post_id"]
+            pk=self.kwargs["post_id"],
+            status=True
         )
 
 
@@ -234,13 +236,15 @@ class ReplyComment(LoginRequiredMixin, CreateView):
     def get_post(self):
         return get_object_or_404(
             Post,
-            pk=self.kwargs["post_id"]
+            pk=self.kwargs["post_id"],
+            status=True
         )
 
     def get_parent(self):
         return get_object_or_404(
             Comment,
-            pk=self.kwargs["pk"]
+            pk=self.kwargs["pk"],
+            post__id=self.kwargs["post_id"]
         )
         
     def get_context_data(self, **kwargs):

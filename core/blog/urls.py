@@ -34,6 +34,4 @@ urlpatterns = [
     # delete, only authenticated users
     path("post/<int:post_id>/comment/<int:pk>/delete", views.DeleteComment.as_view(), name="delete-comment"),
     
-    # api
-    path("api/", include("blog.api.urls"))
 ]
