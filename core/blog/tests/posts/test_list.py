@@ -72,7 +72,7 @@ class PostListTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context["is_paginated"])
         
-    def test_each_page_contains_ten_posts(self):
+    def test_each_page_contains_nine_posts(self):
         """
         Test postlist view is paginate by 10 post
         """

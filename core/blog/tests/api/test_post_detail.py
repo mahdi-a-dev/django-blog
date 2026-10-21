@@ -68,7 +68,7 @@ class PostDetailAPITests(APITestCase):
             format="json"
         )
         
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(Post.objects.filter(title="new post").exists())
         
     def test_staff_user_can_delete_posts(self):

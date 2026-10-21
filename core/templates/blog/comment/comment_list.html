@@ -3,7 +3,9 @@
     <div class="comment-header">
         <div class="comment-header-info">
             <span class="comment-author">
-                {% if comment.profile.first_name and comment.profile.last_name %}
+                {% if request.user == comment.profile.user %}
+                    You
+                {% elif comment.profile.first_name and comment.profile.last_name %}
                     {{ comment.profile.first_name }} {{ comment.profile.last_name }}
                 {% else %}
                     Unknown user

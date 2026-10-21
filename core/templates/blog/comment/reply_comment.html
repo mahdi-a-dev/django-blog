@@ -11,8 +11,10 @@
         <div class="comment-quote">
             <div>
                 <span class="comment-quote-label">
-                    {% if comment.profile.first_name and comment.profile.last_name %}
-                        {{ comment.profile.first_name }} {{ comment.profile.last_name }}
+                    {% if request.user == parent.profile.user %}
+                        You
+                    {% elif parent.profile.first_name and parent.profile.last_name %}
+                        {{ parent.profile.first_name }} {{ parent.profile.last_name }}
                     {% else %}
                         Unknown user
                     {% endif %}

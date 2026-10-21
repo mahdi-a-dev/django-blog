@@ -10,7 +10,8 @@ class PasswordChangeTests(TestCase):
     """
     Test ChangePassword, only authenticated user can access
     """
-    def setUp(self):
+    @classmethod
+    def setUpTestData(self):
         self.regular_user = user.objects.create_user(
             email="regular@gmail.com",
             password="password-123"

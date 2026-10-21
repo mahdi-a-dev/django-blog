@@ -9,7 +9,8 @@ class ProfileTests(TestCase):
     """
     Test ProfileView, only authenticated user can access
     """
-    def setUp(self):
+    @classmethod
+    def setUpTestData(self):
         self.regular_user = user.objects.create_user(
             email="regular@gmail.com",
             password="password-123"
@@ -71,7 +72,7 @@ class ProfileTests(TestCase):
         """
         Test staff user cannot access to another staff user posts
         """
-        staff_user = user.objects.create(
+        staff_user = user.objects.create_user(
             email="anotherstaff@gmail.com",
             password="password-123",
             is_staff=True
