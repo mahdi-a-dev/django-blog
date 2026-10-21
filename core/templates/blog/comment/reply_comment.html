@@ -6,7 +6,19 @@
 {% block content %}
     <div class="form-card">
         <div class="page-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 1.5rem;">
-            <h1 class="page-title" style="font-size: 1.5rem;">Reply  '{{parent.content|truncatechars:"10"}}'</h1>
+            <h1 class="page-title" style="font-size: 1.5rem;">Reply to</h1>
+        </div>
+        <div class="comment-quote">
+            <div>
+                <span class="comment-quote-label">
+                    {% if comment.profile.first_name and comment.profile.last_name %}
+                        {{ comment.profile.first_name }} {{ comment.profile.last_name }}
+                    {% else %}
+                        Unknown user
+                    {% endif %}
+                </span>
+                {{ parent.content|truncatewords:"5" }}
+            </div>
         </div>
         <form method="post">
             {% csrf_token %}

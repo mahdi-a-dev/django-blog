@@ -43,7 +43,7 @@
                         {% if post.author.first_name and post.author.last_name %}
                             <span class="post-card-meta-item">By {{ post.author.first_name }} {{ post.author.last_name }}</span>
                         {% else %}
-                            <span class="post-card-meta-item">By {{ post.author }}</span>
+                            <span class="post-card-meta-item">By Admin</span>
                         {% endif %}
                         <span class="post-card-meta-item">{{ post.published_date|naturaltime }}</span>
                     </div>

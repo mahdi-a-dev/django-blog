@@ -14,7 +14,7 @@
                 {% if post.author.first_name and post.author.last_name %}
                     <span class="post-card-meta-item">By {{ post.author.first_name }} {{ post.author.last_name }}</span>
                 {% else %}
-                    <span class="post-card-meta-item">By {{ post.author }}</span>
+                    <span class="post-card-meta-item">By Admin</span>
                 {% endif %}
                 <span>Published {{ post.published_date|naturaltime }}</span>
             </div>
@@ -30,7 +30,7 @@
 
         <section class="comments-section">
             <h2 class="comments-title">Comments ({{ post.comments.count }})</h2>
-            
+
             {% if user.is_authenticated %}
                 <div class="comment-form">
                     <form method="post" action="{% url 'blog:add-comment' post_id=post.id %}">
@@ -50,45 +50,11 @@
                     <p>Please <a href="{% url 'accounts:login' %}">login</a> to add a comment.</p>
                 </div>
             {% endif %}
-            
+
             <div class="comment-list">
                 <!-- Comments with no parents -->
                 {% for comment in post.comments.parents %}
-                    <div class="comment-card">
-                        <div class="comment-header">
-                            <span class="comment-author">{{ comment.profile.user.email }}</span>
-                            <span class="comment-date">{{ comment.created_date|naturaltime }}</span>
-                        </div>
-                        {% if user.is_authenticated %}
-                            <a href="{% url 'blog:reply-comment' post_id=post.pk pk=comment.id%}">reply</a>
-                        {% endif %}
-                        <div class="comment-content">{{ comment.content }}</div>
-                        {% if user.is_authenticated and comment.profile.user == user %}
-                            <div class="comment-actions">
-                                <a href="{% url 'blog:edit-comment' post_id=post.id pk=comment.id %}" class="btn btn-sm">Edit</a>
-                                <a href="{% url 'blog:delete-comment' post_id=post.id pk=comment.id %}" class="btn btn-sm btn-danger">Delete</a>
-                            </div>
-                        {% endif %}
-                    <!-- Replies for this comment-->
-                    {% for reply in comment.replies.all %}
-                    <div class="comment-card">
-                        <div class="comment-header">
-                            <span class="comment-author">{{ reply.profile.user.email }}</span>
-                            <span class="comment-date">{{ reply.created_date|naturaltime }}</span>
-                        </div>
-                        {% if user.is_authenticated %}
-                            <a href="{% url 'blog:reply-comment' post_id=post.pk pk=comment.id%}">reply</a>
-                        {% endif %}
-                        <div class="comment-content">{{ reply.content }}</div>
-                        {% if user.is_authenticated and reply.profile.user == user %}
-                            <div class="comment-actions">
-                                <a href="{% url 'blog:edit-comment' post_id=post.id pk=comment.id %}" class="btn btn-sm">Edit</a>
-                                <a href="{% url 'blog:delete-comment' post_id=post.id pk=comment.id %}" class="btn btn-sm btn-danger">Delete</a>
-                            </div>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                    </div>
+                    {% include "blog/comment/comment_list.html" with comment=comment is_reply=False %}
                 {% empty %}
                     <div class="empty-state">
                         <p class="text-muted">No comments yet. Be the first to comment!</p>
