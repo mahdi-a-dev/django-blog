@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from .models import User, Profile
 
 
+@admin.register(User)
 class CustomeUserModel(UserAdmin):
     model = User
     list_display = ("email", "is_staff", "is_active", "is_superuser")
@@ -24,9 +25,16 @@ class CustomeUserModel(UserAdmin):
             )}
         ),
     )
+
     search_fields = ("email",)
     ordering = ("email",)
+    list_editable = ("is_staff", "is_active", "is_superuser")
 
 
-admin.site.register(User, CustomeUserModel)
-admin.site.register(Profile)
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "first_name", "last_name", "created_date", "update_date")
+    search_fields = ("user__email", "first_name",)
+    raw_id_fields = ("user",)
+    date_hierarchy = "created_date"
+    ordering = ("-created_date",)
